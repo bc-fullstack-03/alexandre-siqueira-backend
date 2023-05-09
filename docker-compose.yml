@@ -1,0 +1,45 @@
+version: '3'
+services:
+  localstack:
+    image: localstack/localstack
+    container_name: localstack
+    ports:
+      - "4566:4566"
+      - "4510-4559:4510-4559"
+      - "8055:8080"
+    environment:
+      - SERVICES=s3
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+    volumes:
+      - ./tmp/localstack:/tmp/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - mynet
+
+  mongodb:
+    image: mongo
+    ports:
+      - 27017:27017
+    networks:
+      - mynet
+  myapp:
+    build:
+      context: src/main/java/com/br/aspli/alexandresiqueirabackend
+      dockerfile: Dockerfile
+    depends_on:
+      mongodb:
+        condition: service_started
+      localstack:
+        condition: service_started
+    environment:
+      PORT: 8082
+      JWT_PASS: acessq1w2e3r4password
+    ports:
+      - 8082:8082
+    networks:
+      - mynet
+
+networks:
+  mynet:
+    driver: bridge
