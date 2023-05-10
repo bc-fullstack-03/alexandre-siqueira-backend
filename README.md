@@ -35,8 +35,7 @@ mvn clean install
 docker-compose up
 ```
 
-5access browser url:
-- Web Application: http://localhost:8082
+5) access browser url:
 - Api Swagger Documentation: http://localhost:8082/swagger-ui/index.html
 
 ## Author
