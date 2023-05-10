@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/users")
 public class UserController {
     @Autowired
     private IUserService _userService;
 
-    @PostMapping("create")
+    @PostMapping("/create")
     public ResponseEntity<String> createUser(@RequestBody CreateUserRequest request) {
         var response = _userService.createUser(request);
 
@@ -27,7 +27,7 @@ public class UserController {
         return ResponseEntity.ok().body(_userService.findUserByEmail(email));
     }
 
-    @PostMapping("/photo/upload")
+    @PostMapping("user/photo/upload")
     public ResponseEntity uploadPhotoProfile(@RequestParam("photo") MultipartFile photo) {
         try {
             _userService.uploadPhotoProfile(photo);

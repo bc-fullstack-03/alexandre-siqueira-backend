@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -39,7 +40,7 @@ public class PostService implements IPostService {
     }
 
     @Override
-    public FindPostResponse create(CreatePostRequest request) {
+    public String createPost(CreatePostRequest request) {
         User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new EntityNotFoundException("User not found with id: " + request.getUserId()));
         Post post = new Post();
         post.setTitle(request.getTitle());
@@ -47,9 +48,20 @@ public class PostService implements IPostService {
         post.setPhotoUri(request.getPhotoUri());
         post.setUserId(user.getId());
         post = postRepository.save(post);
-        return mapToFindPostResponse(post);
+        return mapToFindPostResponse(post).toString();
     }
 
+    @Override
+    public String deletePost(UUID id) throws EntityNotFoundException {
+        Optional<Post> postOptional = postRepository.findById(id.toString());
+        if (postOptional.isPresent()) {
+            Post post = postOptional.get();
+            postRepository.delete(post);
+            return mapToFindPostResponse(post).toString();
+        } else {
+            throw new EntityNotFoundException("Post with id " + id + " not found.");
+        }
+    }
     private FindPostResponse mapToFindPostResponse(Post post) {
         FindPostResponse response = new FindPostResponse();
         response.setId(post.getId());
@@ -59,4 +71,5 @@ public class PostService implements IPostService {
         response.setUserId(post.getUserId());
         return response;
     }
+
 }
